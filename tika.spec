@@ -1,15 +1,14 @@
 # Conditionals to help breaking tika <-> vorbis-java-tika dependency cycle
-%if 0%{?fedora}
 %bcond_with vorbis_tika
 # Disable only for now
-%bcond_with tika_parsers
-%bcond_with tika_app
-%endif
+%bcond_without tika_parsers
+%bcond_without tika_app
 
 Name:          tika
 Version:       1.5
-Release:       1%{?dist}
+Release:       1.1
 Summary:       A content analysis toolkit
+Group:		Development/Java
 License:       ASL 2.0
 Url:           http://tika.apache.org/
 Source0:       http://www.apache.org/dist/tika/%{name}-%{version}-src.zip
@@ -26,11 +25,11 @@ BuildRequires: mvn(org.apache.ant:ant)
 BuildRequires: mvn(org.osgi:org.osgi.compendium)
 BuildRequires: mvn(org.osgi:org.osgi.core)
 
-%if %{without vorbis_tika}
+%if %{with vorbis_tika}
 BuildRequires: mvn(org.gagravarr:vorbis-java-tika)
 %endif
 
-%if %{without tika_parsers}
+%if %{with tika_parsers}
 BuildRequires: mvn(com.adobe.xmp:xmpcore)
 BuildRequires: mvn(com.drewnoakes:metadata-extractor:2)
 BuildRequires: mvn(com.uwyn:jhighlight)
@@ -54,7 +53,7 @@ BuildRequires: mvn(org.bouncycastle:bcprov-jdk16)
 BuildRequires: mvn(org.ccil.cowan.tagsoup:tagsoup)
 BuildRequires: mvn(org.ow2.asm:asm-all)
 BuildRequires: mvn(rome:rome)
-%if %{without tika_app}
+%if %{with tika_app}
 BuildRequires: mvn(com.google.code.gson:gson)
 BuildRequires: mvn(log4j:log4j:1.2.17)
 BuildRequires: mvn(org.slf4j:slf4j-log4j12)
@@ -91,7 +90,7 @@ The Apache Tika toolkit detects and extracts meta-data and
 structured text content from various documents using existing
 parser libraries.
 
-%if %{without tika_parsers}
+%if %{with tika_parsers}
 %package parsers
 Summary:       Apache Tika parsers
 
@@ -113,7 +112,7 @@ Summary:       Apache Tika XMP
 %description xmp
 Converts Tika metadata to XMP.
 
-%if %{without tika_app}
+%if %{with tika_app}
 %package app
 Summary:       Apache Tika Application
 Requires:      mvn(log4j:log4j:1.2.17)
@@ -168,15 +167,15 @@ find . -name '*.zip' -delete
 # see https://bugzilla.redhat.com/show_bug.cgi?id=947457
 %pom_xpath_set "pom:project/pom:dependencies/pom:dependency[pom:artifactId='metadata-extractor']/pom:version" 2  %{name}-parsers
 # Disable vorbis-java-tika support, cause circular dependency
-%if %{with vorbis_tika}
+%if %{without vorbis_tika}
 %pom_remove_dep :vorbis-java-tika %{name}-parsers
 %endif
 
-%if %{with tika_parsers}
+%if %{without tika_parsers}
 %pom_disable_module %{name}-parsers
 %pom_disable_module %{name}-xmp
 %else
-%if %{with tika_app}
+%if %{without tika_app}
 %pom_disable_module %{name}-app
 %else
 # No bundled libraries are shipped
@@ -231,7 +230,7 @@ rm -r %{name}-parsers/src/test/java/org/apache/tika/parser/fork/ForkParserIntegr
 %install
 %mvn_install
 
-%if %{without tika_app}
+%if %{with tika_app}
 %jpackage_script org.apache.tika.cli.TikaCLI "" "" %{name}:google-gson:commons-io:commons-logging:log4j12-1.2.17:metadata-extractor2-2:juniversalchardet:apache-commons-codec:boilerpipe:thredds/netcdf:thredds/udunits:bea-stax-api:commons-compress:felix/org.apache.felix.scr.annotations:apache-mime4j/core:apache-mime4j/dom:pdfbox:poi/poi:poi/poi-scratchpad:poi/poi-ooxml:bcmail:bcprov:tagsoup:objectweb-asm4/asm-all:rome:fontbox:vorbis-java:dom4j:xmlbeans:poi/poi-ooxml-schemas:jempbox:xmpcore:slf4j/api:slf4j/log4j12:jdom:jdom2 %{name}-app true
 %endif
 
@@ -239,7 +238,7 @@ rm -r %{name}-parsers/src/test/java/org/apache/tika/parser/fork/ForkParserIntegr
 %dir %{_javadir}/%{name}
 %doc CHANGES.txt HEADER.txt KEYS LICENSE.txt NOTICE.txt README.txt
 
-%if %{without tika_parsers}
+%if %{with tika_parsers}
 %files parsers -f .mfiles-%{name}-parsers
 %doc LICENSE.txt NOTICE.txt
 
@@ -249,7 +248,7 @@ rm -r %{name}-parsers/src/test/java/org/apache/tika/parser/fork/ForkParserIntegr
 %files xmp -f .mfiles-%{name}-xmp
 %doc LICENSE.txt NOTICE.txt
 
-%if %{without tika_app}
+%if %{with tika_app}
 %files app -f .mfiles-%{name}-app
 %doc LICENSE.txt NOTICE.txt
 %{_bindir}/%{name}-app
