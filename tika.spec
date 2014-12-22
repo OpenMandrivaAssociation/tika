@@ -1,3 +1,5 @@
+%{?_javapackages_macros:%_javapackages_macros}
+
 # Conditionals to help breaking tika <-> vorbis-java-tika dependency cycle
 %bcond_with vorbis_tika
 # Disable only for now
@@ -6,7 +8,7 @@
 
 Name:          tika
 Version:       1.5
-Release:       1.1
+Release:       1.2
 Summary:       A content analysis toolkit
 Group:		Development/Java
 License:       ASL 2.0
