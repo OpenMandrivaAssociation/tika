@@ -8,7 +8,7 @@
 
 Name:          tika
 Version:       1.5
-Release:       1.3
+Release:       1.4
 Summary:       A content analysis toolkit
 Group:		Development/Java
 License:       ASL 2.0
