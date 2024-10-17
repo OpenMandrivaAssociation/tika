@@ -12,7 +12,7 @@ Release:       1.4
 Summary:       A content analysis toolkit
 Group:		Development/Java
 License:       ASL 2.0
-Url:           http://tika.apache.org/
+Url:           https://tika.apache.org/
 Source0:       http://www.apache.org/dist/tika/%{name}-%{version}-src.zip
 # Fix stax-api gId:aId
 # Replace unavailable org.ow2.asm:asm-debug-all:4.1
